@@ -8,26 +8,19 @@ import java.util.Map;
 
 public class Article {
     public static final ArrayList<Mapping> mappings = new ArrayList<Mapping>(Arrays.asList(
-            new Mapping("id", "", Type.STRING),
+            new Mapping("id", "http://ns.nature.com/terms/id", Type.STRING),
 
             new Mapping("title", "http://purl.org/dc/elements/1.1/title", Type.URI),
             new Mapping("title", "http://www.w3.org/2000/01/rdf-schema#label", Type.STRING),
 
-            new Mapping("paperAbstract","",Type.STRING),
+            new Mapping("paperAbstract","http://dbpedia.org/ontology/abstract",Type.STRING),
 
-            new Mapping("entities", "", Type.STRING),
+            new Mapping("entities", "http://rdfs.org/ns/void#entities", Type.STRING),
 
-            new Mapping("s2Url", "", Type.URI),
+            new Mapping("s2Url", "http://www.w3.org/2002/07/owl#sameAs", Type.URI),
 
-            new Mapping("s2PdfUrl", "", Type.URI),
+            new Mapping("s2PdfUrl", "http://www.w3.org/2002/07/owl#sameAs", Type.URI),
 
-            new Mapping("pdfUrls", "", Type.CUSTOM),
-
-            new Mapping("authors", "http://dbpedia.org/ontology/author", Type.CUSTOM),
-
-            new Mapping("inCitations", "http://www.w3.org/1999/xhtml/vocab#cite", Type.CUSTOM),
-
-            new Mapping("outCitations", "http://www.w3.org/1999/xhtml/vocab#cite", Type.CUSTOM),
 
             new Mapping("year", "http://purl.org/dc/terms/issued", Type.STRING),
 
@@ -39,13 +32,23 @@ public class Article {
 
             new Mapping("journalPages", "http://swrc.ontoware.org/ontology#pages", Type.STRING),
 
-            new Mapping("sources", "", Type.STRING),
+            new Mapping("sources", "http://purl.org/dc/terms/source", Type.STRING),
 
-            new Mapping("doi", "", Type.STRING),
+            new Mapping("doi", "http://ns.nature.com/terms/doi", Type.STRING),
 
-            new Mapping( "doiUrl", "", Type.URI),
+            new Mapping( "doiUrl", "http://ns.nature.com/terms/doi", Type.URI),
 
-            new Mapping("pmid", "", Type.STRING)
+            new Mapping("pmid", "http://purl.org/ontology/bibo/pmid", Type.STRING),
+
+            new Mapping("authors.name", "http://dbpedia.org/ontology/author", Type.STRING),
+
+            //TODO authors id
+
+            new Mapping("pdfUrls", "http://www.w3.org/2002/07/owl#sameAs", Type.URI),
+
+            new Mapping("inCitations", "http://www.w3.org/1999/xhtml/vocab#cite", Type.URI),
+
+            new Mapping("outCitations", "http://www.w3.org/1999/xhtml/vocab#cite", Type.URI)
 
     ));
 
