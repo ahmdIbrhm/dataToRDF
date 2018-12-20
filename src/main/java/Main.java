@@ -14,9 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Main {
-
-    static final String FILE_PATH = "/home/pedro/Documentos/semanticscholar/src/main/resources/sample-S2-records";
-    static final String OUTPUT_PATH = "/home/pedro/Documentos/semanticscholar/src/main/resources/output.rdf";
+//
+//    static final String FILE_PATH = "/home/pedro/Documentos/semanticscholar/src/main/resources/sample-S2-records";
+    static final String FILE_PATH = "/home/migliatti/semanticscholar/s2-corpus";
+    static final String OUTPUT_PATH = "/home/migliatti/semanticscholar/semanticscholar/src/main/resources/output.rdf";
 
     public static void main(String[] argv) throws IOException {
         StreamRDF writer = StreamRDFWriter.getWriterStream(new FileOutputStream(OUTPUT_PATH), RDFFormat.NTRIPLES);
