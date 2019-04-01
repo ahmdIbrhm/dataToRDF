@@ -1,4 +1,4 @@
-package informa;
+package eu.qanswer.mapping.informa;
 
 import eu.qanswer.mapping.AbstractClassMapping;
 import eu.qanswer.mapping.Mapping;
@@ -11,12 +11,12 @@ public class Investigator extends AbstractClassMapping {
 
     public Investigator(){
         file = "/Users/Dennis/PycharmProjects/TrialTrove/crawl_investigators";
-        baseUrl = "https://citeline.informa.com/investigators/details/";
+        baseUrl = "https://citeline.eu.qanswer.mapping.informa.com/investigators/details/";
         key = "investigatorId";
         mappings = new ArrayList<Mapping>(Arrays.asList(
                 new Mapping("investigatorId", "http://www.w3.org/2000/01/rdf-schema#type", "http://www.wikidata.org/entity/Q30093123"),
                 new Mapping("investigatorEmails", "http://www.wikidata.org/prop/direct/P968", Type.LITERAL),
-                new Mapping("investigatorPrimaryOrganization", "http://www.wikidata.org/prop/direct/P108", "https://citeline.informa.com/organizations/details/", Type.URI),
+                new Mapping("investigatorPrimaryOrganization", "http://www.wikidata.org/prop/direct/P108", "https://citeline.eu.qanswer.mapping.informa.com/organizations/details/", Type.URI),
                 new Mapping("investigatorLastName", "http://www.w3.org/2000/01/rdf-schema#label", Type.LITERAL),
                 new Mapping("investigatorFirstName", "http://www.w3.org/2000/01/rdf-schema#label", Type.CUSTOM), //// check
                 new Mapping("investigatorNPI", "http://www.newclean.eu/npi", Type.LITERAL),

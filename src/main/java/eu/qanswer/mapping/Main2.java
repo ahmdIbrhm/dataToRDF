@@ -3,7 +3,6 @@ package eu.qanswer.mapping;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
-import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
@@ -27,8 +26,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import informa.Organization;
-import informa.Trial;
+import eu.qanswer.mapping.informa.Organization;
+import eu.qanswer.mapping.informa.Trial;
 
 import static org.apache.jena.datatypes.xsd.XSDDatatype.XSDinteger;
 

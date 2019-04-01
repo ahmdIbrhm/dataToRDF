@@ -1,18 +1,11 @@
-package informa;
+package eu.qanswer.mapping.informa;
 
 import eu.qanswer.mapping.AbstractClassMapping;
 import eu.qanswer.mapping.Mapping;
 import eu.qanswer.mapping.Type;
 
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.apache.jena.datatypes.xsd.XSDDatatype.XSDdateTime;
 import static org.apache.jena.datatypes.xsd.XSDDatatype.XSDinteger;
@@ -24,7 +17,7 @@ public class Trial extends AbstractClassMapping {
     public Trial(){
         format = "json";
         file = "/Users/Dennis/PycharmProjects/TrialTrove/crawl_trials";
-        baseUrl = "https://citeline.informa.com/trials/details/";
+        baseUrl = "https://citeline.eu.qanswer.mapping.informa.com/trials/details/";
         key = "trialId";
         mappings = new ArrayList<Mapping>(Arrays.asList(
                 new Mapping("trialId", "http://www.w3.org/2000/01/rdf-schema#type", "http://www.wikidata.org/entity/Q30612"),
@@ -58,7 +51,7 @@ public class Trial extends AbstractClassMapping {
                 new Mapping("trialTreatmentPlan","http://www.newclean.eu/patientPopulation", Type.LITERAL,XSDstring),
                 new Mapping("trialTargetAccrual","http://www.newclean.eu/tragetNumberPatients", Type.LITERAL, XSDinteger),
                 new Mapping("trialActualAccrual","http://www.newclean.eu/currentNumberPatients", Type.LITERAL, XSDinteger),
-                new Mapping("trialInvestigators(.?)","http://www.wikidata.org/prop/direct/P1840", "https://citeline.informa.com/investigators/details/", Type.URI),
+                new Mapping("trialInvestigators(.?)","http://www.wikidata.org/prop/direct/P1840", "https://citeline.eu.qanswer.mapping.informa.com/investigators/details/", Type.URI),
                 //new Mapping("(.*)trialSupportingUrls","http://www.wikidata.org/prop/direct/P1840", "" ,Type.URI),
                 new Mapping("trialSource","http://www.newclean.eu/source", Type.LITERAL)
     ));

@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import informa.Trial;
+import eu.qanswer.mapping.informa.Trial;
 
 
 public class Main {

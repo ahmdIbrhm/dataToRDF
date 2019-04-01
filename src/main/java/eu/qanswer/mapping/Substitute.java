@@ -89,9 +89,9 @@ public class Substitute {
             if (t.getPredicate().toString().equals("http://www.wikidata.org/prop/direct/P17")) {
                 String query = "Select ?s where {" +
                         " OPTIONAL { ?s <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q6256> ." +
-                        " ?s <http://www.w3.org/2000/01/rdf-schema#label> \"" + t.getObject().toString().replace("https://citeline.informa.com/trials/details/", "").replace("_", " ") + "\"@en  } ." +
+                        " ?s <http://www.w3.org/2000/01/rdf-schema#label> \"" + t.getObject().toString().replace("https://citeline.eu.qanswer.mapping.informa.com/trials/details/", "").replace("_", " ") + "\"@en  } ." +
                         " OPTIONAL { ?s <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q6256> ." +
-                        " ?s <http://www.w3.org/2004/02/skos/core#altLabel> \"" + t.getObject().toString().replace("https://citeline.informa.com/trials/details/", "").replace("_", " ") + "\"@en } ." +
+                        " ?s <http://www.w3.org/2004/02/skos/core#altLabel> \"" + t.getObject().toString().replace("https://citeline.eu.qanswer.mapping.informa.com/trials/details/", "").replace("_", " ") + "\"@en } ." +
                         " } ";
                 System.out.println(query);
                 QueryExecution qe = QueryExecutionFactory.create(query, model);

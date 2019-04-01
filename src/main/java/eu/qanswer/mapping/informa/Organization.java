@@ -1,4 +1,4 @@
-package informa;
+package eu.qanswer.mapping.informa;
 
 import eu.qanswer.mapping.AbstractClassMapping;
 import eu.qanswer.mapping.Mapping;
@@ -11,7 +11,7 @@ public class Organization extends AbstractClassMapping {
 
     public Organization(){
         file = "/Users/Dennis/PycharmProjects/TrialTrove/crawl_organizations_old";
-        baseUrl = "https://citeline.informa.com/organizations/details/";
+        baseUrl = "https://citeline.eu.qanswer.mapping.informa.com/organizations/details/";
         key = "organizationId";
         mappings = new ArrayList<Mapping>(Arrays.asList(
                 new Mapping("organizationName", "http://www.w3.org/2000/01/rdf-schema#label", Type.LITERAL),
@@ -21,7 +21,7 @@ public class Organization extends AbstractClassMapping {
                 new Mapping("organizationPhoneNumbers", "http://www.wikidata.org/prop/direct/P1329", Type.LITERAL),
                 new Mapping("organizationFaxNumbers", "http://www.wikidata.org/prop/direct/P2900", Type.LITERAL),
                 new Mapping("organizationGeoLocation.latitude", "http://www.wikidata.org/prop/direct/P625", Type.CUSTOM),
-                new Mapping("organizationTrials.*id", "http://www.wikidata.org/prop/direct/P137", "https://citeline.informa.com/trials/details/", Type.CUSTOM),
+                new Mapping("organizationTrials.*id", "http://www.wikidata.org/prop/direct/P137", "https://citeline.eu.qanswer.mapping.informa.com/trials/details/", Type.CUSTOM),
                 new Mapping("organizationSupportingUrls","http://www.newclean.eu/source", Type.LITERAL),
                 new Mapping("state","http://www.newclean.eu/state","http://www.newclean.eu/state/", Type.URI_WITH_LABEL),
                 new Mapping("city","http://www.newclean.eu/city","http://www.newclean.eu/city/", Type.URI_WITH_LABEL),
