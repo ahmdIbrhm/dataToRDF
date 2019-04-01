@@ -1,3 +1,5 @@
+package eu.qanswer.mapping;
+
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.ArrayList;
@@ -8,39 +10,39 @@ import java.util.Map;
 
 public class Article {
     public static final ArrayList<Mapping> mappings = new ArrayList<Mapping>(Arrays.asList(
-            new Mapping("id", "http://ns.nature.com/terms/id", Type.STRING),
+            new Mapping("id", "http://ns.nature.com/terms/id", Type.LITERAL),
 
             new Mapping("title", "http://purl.org/dc/elements/1.1/title", Type.URI),
-            new Mapping("title", "http://www.w3.org/2000/01/rdf-schema#label", Type.STRING),
+            new Mapping("title", "http://www.w3.org/2000/01/rdf-schema#label", Type.LITERAL),
 
-            new Mapping("paperAbstract","http://dbpedia.org/ontology/abstract",Type.STRING),
+            new Mapping("paperAbstract","http://dbpedia.org/ontology/abstract",Type.LITERAL),
 
-            new Mapping("entities", "http://rdfs.org/ns/void#entities", Type.STRING),
+            new Mapping("entities", "http://rdfs.org/ns/void#entities", Type.LITERAL),
 
             new Mapping("s2Url", "http://www.w3.org/2002/07/owl#sameAs", Type.URI),
 
             new Mapping("s2PdfUrl", "http://www.w3.org/2002/07/owl#sameAs", Type.URI),
 
 
-            new Mapping("year", "http://purl.org/dc/terms/issued", Type.STRING),
+            new Mapping("year", "http://purl.org/dc/terms/issued", Type.LITERAL),
 
-            new Mapping("venue","http://data.europa.eu/eli/ontology#published_in", Type.STRING),
+            new Mapping("venue","http://data.europa.eu/eli/ontology#published_in", Type.LITERAL),
 
-            new Mapping ("journalName", "http://data.europa.eu/eli/ontology#published_in", Type.STRING),
+            new Mapping ("journalName", "http://data.europa.eu/eli/ontology#published_in", Type.LITERAL),
 
-            new Mapping("journalVolume", "http://swrc.ontoware.org/ontology#volume", Type.STRING),
+            new Mapping("journalVolume", "http://swrc.ontoware.org/ontology#volume", Type.LITERAL),
 
-            new Mapping("journalPages", "http://swrc.ontoware.org/ontology#pages", Type.STRING),
+            new Mapping("journalPages", "http://swrc.ontoware.org/ontology#pages", Type.LITERAL),
 
-            new Mapping("sources", "http://purl.org/dc/terms/source", Type.STRING),
+            new Mapping("sources", "http://purl.org/dc/terms/source", Type.LITERAL),
 
-            new Mapping("doi", "http://ns.nature.com/terms/doi", Type.STRING),
+            new Mapping("doi", "http://ns.nature.com/terms/doi", Type.LITERAL),
 
             new Mapping( "doiUrl", "http://ns.nature.com/terms/doi", Type.URI),
 
-            new Mapping("pmid", "http://purl.org/ontology/bibo/pmid", Type.STRING),
+            new Mapping("pmid", "http://purl.org/ontology/bibo/pmid", Type.LITERAL),
 
-            new Mapping("authors.name", "http://dbpedia.org/ontology/author", Type.STRING),
+            new Mapping("authors.name", "http://dbpedia.org/ontology/author", Type.LITERAL),
 
             //TODO authors id
 

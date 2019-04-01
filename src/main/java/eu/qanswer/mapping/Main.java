@@ -1,3 +1,5 @@
+package eu.qanswer.mapping;
+
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
@@ -13,11 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import informa.Trial;
+
+
 public class Main {
 //
 //    static final String FILE_PATH = "/home/pedro/Documentos/semanticscholar/src/main/resources/sample-S2-records";
-    static final String FILE_PATH = "/home/migliatti/semanticscholar/s2-corpus";
-    static final String OUTPUT_PATH = "/home/migliatti/semanticscholar/semanticscholar/src/main/resources/output.rdf";
+    static final String FILE_PATH = "/Users/Dennis/Downloads/trial.json";
+    static final String OUTPUT_PATH = "/Users/Dennis/Downloads/output.ttl";
 
     public static void main(String[] argv) throws IOException {
         StreamRDF writer = StreamRDFWriter.getWriterStream(new FileOutputStream(OUTPUT_PATH), RDFFormat.NTRIPLES);
@@ -79,27 +84,33 @@ public class Main {
     }
 
     private static void processMap(HashMap<String, String> article, StreamRDF writer) {
-        Node subject = NodeFactory.createURI(article.get("s2Url"));
+        Trial trial = new Trial();
+        for (String key : article.keySet()) {
+            System.out.println(key+" --- "+article.get(key));
+        }
+        Node subject = NodeFactory.createURI(trial.baseUrl+article.get(trial.getKey()));
         for (Map.Entry<String, String> entry : article.entrySet()) {
             String key = entry.getKey().replaceAll("[0-9]", "").replace("[", "").replace("]", "");
-            List<Mapping> mappings = Article.getMapping(key);
+            List<Mapping> mappings = trial.getMapping(key);
             for (Mapping map : mappings) {
                 Node predicate = NodeFactory.createURI(map.getPropertyUri());
                 Node object = null;
                 Triple t;
                 switch (map.getType()) {
-                    case STRING:
+                    case LITERAL:
                         object = NodeFactory.createLiteral(entry.getValue());
                         break;
                     case URI:
-                        object = NodeFactory.createURI(entry.getValue());
+                        object = NodeFactory.createURI(trial.getBaseUrl()+entry.getValue());
                         break;
                 }
                 if (object != null && !object.isBlank()) {
                     t = new Triple(subject, predicate, object);
+                    System.out.println(t.toString());
                     writer.triple(t);
                 }
             }
         }
+        writer.finish();
     }
 }
