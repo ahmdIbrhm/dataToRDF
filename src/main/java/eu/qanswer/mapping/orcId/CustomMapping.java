@@ -1,0 +1,21 @@
+package eu.qanswer.mapping.orcId;
+
+import eu.qanswer.mapping.Mapping;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.riot.system.StreamRDF;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public abstract class CustomMapping {
+    Mapping mapping;
+    public abstract ArrayList<Triple> function( HashMap<String,String> article, String key);
+    public void setMapping(Mapping mapping)
+    {
+        this.mapping=mapping;
+    }
+    public Mapping getMapping()
+    {
+        return mapping;
+    }
+}

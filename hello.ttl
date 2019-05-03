@@ -1,0 +1,8 @@
+<http://orcid.org/0000-0001-5006-5580> <http://www.wikidata.org/prop/direct/P735> "Rodriguez-Ponce" .
+<http://orcid.org/967951> <http://www.wikidata.org/prop/direct/P512> "Masters" .
+<http://orcid.org/967969> <http://www.wikidata.org/prop/direct/P512> "Bachelor in Electronics" .
+<http://orcid.org/967942> <http://www.wikidata.org/prop/direct/P512> "Ph.D." .
+<https://citeline.eu.qanswer.mapping.informa.com/trials/details/548> <http://www.newclean.eu/gender> <http://www.wikidata.org/entity/Q467> .
+<https://citeline.eu.qanswer.mapping.informa.com/trials/details/548> <http://www.newclean.eu/gender> <http://www.wikidata.org/entity/Q8441> .
+<https://citeline.eu.qanswer.mapping.informa.com/trials/details/548> <http://www.wikidata.org/prop/direct/P6099> <http://www.wikidata.org/entity/Q42824440> .
+<https://citeline.eu.qanswer.mapping.informa.com/trials/details/548> <http://www.newclean.eu/source> "Trialtrove" .
