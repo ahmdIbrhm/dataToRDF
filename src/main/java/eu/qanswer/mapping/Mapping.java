@@ -1,7 +1,6 @@
 package eu.qanswer.mapping;
 
 import eu.qanswer.mapping.orcId.CustomMapping;
-import javafx.util.Pair;
 import org.apache.jena.datatypes.RDFDatatype;
 
 public class Mapping {
