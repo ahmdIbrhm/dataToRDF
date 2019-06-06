@@ -45,6 +45,8 @@ import javax.xml.stream.events.EndElement;
 import org.apache.commons.lang3.ObjectUtils;
 
 public class Main2 {
+//    "java -jar target/eu.wdaqua.semanticscholar-1.0-SNAPSHOT-jar-with-dependencies.jar -f eu.qanswer.mapping.orcId.OrcId,eu.qanswer.mapping.orcId.OrgStudy,eu.qanswer.mapping.orcId.OrgWork,eu.qanswer.mapping.orcId.Publication -o orcid.ttl"
+
 
     private static final String endpoint = "http://qanswer-core1.univ-st-etienne.fr/api/endpoint/wikidata/sparql";
     //static final String endpoint = "https://query.wikidata.org/sparql";
@@ -311,6 +313,7 @@ public class Main2 {
     }
     public static Node getSubject(HashMap<String,String> article,AbstractClassMapping mappings,String key)
     {
+        Utility utility=new Utility();
         String keyWithoutBrackets = key.replaceAll("\\[(.*?)]", "");
         List<String> arrayMappingsKey = new ArrayList<>(Arrays.asList(mappings.getKey().split("\\.")));
         List<String> arrayKeyArticle = new ArrayList<>(Arrays.asList(keyWithoutBrackets.split("\\.")));
@@ -335,7 +338,8 @@ public class Main2 {
         String uri=mappings.baseUrl + article.get(splitByPoints(finalSubject));
         String [] array=uri.split(" ");
         String newUri=String.join("_",array);
-        return (NodeFactory.createURI(newUri));
+
+        return (Utility.createURI(newUri));
     }
     private static Node getPredicate(Mapping mapping)
     {
@@ -365,7 +369,7 @@ public class Main2 {
                 {
                     subject = getSubject(article, mappings, key);
                     predicate = getPredicate(mapping);
-                    object = NodeFactory.createURI(mapping.getObject());
+                    object = Utility.createURI(mapping.getObject());
                     triples.add(new Triple(subject, predicate, object));
                 }
                 else {
