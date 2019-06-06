@@ -21,8 +21,8 @@ import eu.qanswer.mapping.informa.Trial;
 public class Main {
 //
 //    static final String FILE_PATH = "/home/pedro/Documentos/semanticscholar/src/main/resources/sample-S2-records";
-    static final String FILE_PATH = "/Users/Dennis/Downloads/trial.json";
-    static final String OUTPUT_PATH = "/Users/Dennis/Downloads/output.ttl";
+    static final String FILE_PATH = "C:\\Users\\My pc\\Desktop\\trial.json";
+    static final String OUTPUT_PATH = "C:\\Users\\My pc\\Desktop\\output.ttl";
 
     public static void main(String[] argv) throws IOException {
         StreamRDF writer = StreamRDFWriter.getWriterStream(new FileOutputStream(OUTPUT_PATH), RDFFormat.NTRIPLES);
@@ -96,6 +96,7 @@ public class Main {
                 Node predicate = NodeFactory.createURI(map.getPropertyUri());
                 Node object = null;
                 Triple t;
+
                 switch (map.getType()) {
                     case LITERAL:
                         object = NodeFactory.createLiteral(entry.getValue());

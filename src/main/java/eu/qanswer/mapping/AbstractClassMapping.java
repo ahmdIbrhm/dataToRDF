@@ -15,6 +15,15 @@ public abstract class AbstractClassMapping {
     public String baseUrl;
     public String key;
     public ArrayList<Mapping> mappings;
+    public String iterator;
+
+    public String getIterator() {
+        return iterator;
+    }
+
+    public void setIterator(String iterator) {
+        this.iterator = iterator;
+    }
 
     public String getFile() {
         return file;

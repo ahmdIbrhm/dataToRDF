@@ -1,7 +1,7 @@
 package eu.qanswer.mapping;
 
+import eu.qanswer.mapping.orcId.CustomMapping;
 import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.vocabulary.RDF;
 
 public class Mapping {
     private String tag;
@@ -9,8 +9,8 @@ public class Mapping {
     private String propertyUri;
     private String baseurl;
     private Type type;
-
     private RDFDatatype datatype;
+    private CustomMapping customMapping;
 
     public Mapping(String tag, String propertyUri, String objectUri){
         this.tag = tag;
@@ -18,15 +18,16 @@ public class Mapping {
         this.object = objectUri;
     }
 
-    public Mapping(String tag, String propertyUri, String baseurl, Type type){
+    public Mapping(String tag, String propertyUri, String baseurl, CustomMapping customMapping, Type type){
         this.tag = tag;
-
         this.propertyUri = propertyUri;
         this.baseurl = baseurl;
         this.type = type;
+        this.customMapping=customMapping;
+        customMapping.setMapping(this);
     }
 
-    public Mapping(String tag, String propertyUri, Type type){
+    public Mapping(String tag, String propertyUri,Type type){
         this.tag = tag;
         this.propertyUri = propertyUri;
         this.type = type;
@@ -37,6 +38,12 @@ public class Mapping {
         this.propertyUri = propertyUri;
         this.type = type;
         this.datatype = datatype;
+    }
+    public Mapping(String tag, String propertyUri, String baseurl,Type type){
+        this.tag = tag;
+        this.propertyUri = propertyUri;
+        this.type = type;
+        this.baseurl = baseurl;
     }
 
     public String getBaseurl() {
@@ -70,5 +77,10 @@ public class Mapping {
 
     public void setObject(String object) {
         this.object = object;
+    }
+
+    public CustomMapping getCustomMapping()
+    {
+        return customMapping;
     }
 }

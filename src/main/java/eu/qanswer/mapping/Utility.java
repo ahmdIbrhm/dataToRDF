@@ -81,8 +81,10 @@ public class Utility {
             //System.out.println("This URI "+s+"contains illigal caracter |");
             s = s.replace("&","");
         }
-
-
+        if (s.contains("^")){
+            //System.out.println("This URI "+s+"contains illigal caracter |");
+            s = s.replace("^","");
+        }
 
         s = s.replaceAll("\\s","");
 

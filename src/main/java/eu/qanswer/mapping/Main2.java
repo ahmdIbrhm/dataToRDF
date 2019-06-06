@@ -3,7 +3,8 @@ package eu.qanswer.mapping;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
-import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
@@ -18,476 +19,458 @@ import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.system.StreamRDF;
 import org.apache.jena.riot.system.StreamRDFWriter;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.lang.reflect.Constructor;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
 
-import eu.qanswer.mapping.informa.Organization;
-import eu.qanswer.mapping.informa.Trial;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
+import java.io.*;
 
-import static org.apache.jena.datatypes.xsd.XSDDatatype.XSDinteger;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.EndElement;
+import org.apache.commons.lang3.ObjectUtils;
 
 public class Main2 {
+//    "java -jar target/eu.wdaqua.semanticscholar-1.0-SNAPSHOT-jar-with-dependencies.jar -f eu.qanswer.mapping.orcId.OrcId,eu.qanswer.mapping.orcId.OrgStudy,eu.qanswer.mapping.orcId.OrgWork,eu.qanswer.mapping.orcId.Publication -o orcid.ttl"
 
-    static final String endpoint = "http://qanswer-core1.univ-st-etienne.fr/api/endpoint/wikidata/sparql";
+
+    private static final String endpoint = "http://qanswer-core1.univ-st-etienne.fr/api/endpoint/wikidata/sparql";
     //static final String endpoint = "https://query.wikidata.org/sparql";
-    static final String OUTPUT_PATH = "/Users/Dennis/IdeaProjects/semanticscholar/newclin.ttl";
+//    static final String OUTPUT_PATH = "C:\\Users\\My pc\\Desktop\\orcId.ttl";
 
-    public static void main(String[] argv) throws IOException {
+    @Parameter(names={"--filesArguments", "-f"})
+    private String filesArguments;
 
-        StreamRDF writer = StreamRDFWriter.getWriterStream(new FileOutputStream(OUTPUT_PATH), RDFFormat.NTRIPLES);
+    @Parameter(names = {"--outputFilePath", "-o"})
+    private String outputFilePath="C:\\Users\\My pc\\Desktop\\orcid.ttl";
 
-        //uses links to extract important information from wikidata
-        List<AbstractClassMapping> mappingsList = new ArrayList<>();
-        mappingsList.add(new Trial());
-        //mappingsList.add(new Investigator());
-        mappingsList.add(new Organization());
-        for (AbstractClassMapping mappings : mappingsList) {
-            for (Mapping m : mappings.mappings){
-                if (m.getPropertyUri().contains("http://www.wikidata.org/prop/direct/")) {
-                    String construct = "CONSTRUCT {?s <http://wikiba.se/ontology#directClaim> <" + m.getPropertyUri() + "> . ?s ?p ?o} where { " +
-                            "?s <http://wikiba.se/ontology#directClaim> <" + m.getPropertyUri() + "> . " +
-                            "?s ?p ?o " +
-                            "}";
-                    //System.out.println(construct);
-                    Query query = QueryFactory.create(construct);
-                    QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
+    @Parameter(names = "--help", help = true)
+    private boolean help = false;
 
-                    Model constructModel = qexec.execConstruct();
 
-                    StmtIterator a = constructModel.listStatements();
-                    while (a.hasNext()) {
-                        Statement statement = a.next();
-                        writer.triple(statement.asTriple());
-                    }
-                    qexec.close();
-                    constructModel.close();
+    public void run() throws Exception {
+        if (help) {
+            System.out.println("Help Yourself");
+        }
+        else {
+            StreamRDF writer = StreamRDFWriter.getWriterStream(new FileOutputStream(new File(outputFilePath)), RDFFormat.NTRIPLES);
+            //uses links to extract important information from wikidata
+            List<AbstractClassMapping> mappingsList = new ArrayList<>();
+            String[] files = filesArguments.split(",");
+            for (String filePath : files) {
+                Class<?> aClass;
+                try {
+                    aClass = Class.forName(filePath.trim());
+                    Constructor<?> ctor = aClass.getConstructor();
+                    AbstractClassMapping object = (AbstractClassMapping) ctor.newInstance();
+                    mappingsList.add(object);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }
+            for (AbstractClassMapping mappings : mappingsList) {
+                for (Mapping m : mappings.mappings) {
+                    if (m.getPropertyUri().contains("http://www.wikidata.org/prop/direct/")) {
+                        String construct = "CONSTRUCT {?s <http://wikiba.se/ontology#directClaim> <" + m.getPropertyUri() + "> . ?s ?p ?o} where { " +
+                                "?s <http://wikiba.se/ontology#directClaim> <" + m.getPropertyUri() + "> . " +
+                                "?s ?p ?o " +
+                                "}";
+                        Query query = QueryFactory.create(construct);
+                        QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
+                        Model constructModel = qexec.execConstruct();
 
-
-
-
-        List<String> qids = Arrays.asList("Q8441","Q467","Q6581097","Q6581072","Q42824069","Q42824440","Q42824827","Q42825046","Q15","Q18","Q46","Q48","Q49","Q27468","Q7204","Q828","Q538","Q408","Q7204", "Q30612");
-        for (String qid : qids){
-            String construct = "CONSTRUCT {?s ?p ?o} where { VALUES ?s { <http://www.wikidata.org/entity/"+qid+"> } . ?s ?p ?o }";
-            Query query = QueryFactory.create(construct);
-            QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
-
-            Model constructModel = qexec.execConstruct();
-
-            StmtIterator a = constructModel.listStatements();
-            while (a.hasNext()) {
-                Statement statement = a.next();
-                writer.triple(statement.asTriple());
-            }
-            qexec.close();
-            constructModel.close();
-            //retrive wikipedia links
-            construct = "CONSTRUCT {" +
-                    "?s <http://schema.org/about> ?s ." +
-                    " ?s ?p ?o2} " +
-                    "where {" +
-                    " VALUES ?o { <http://www.wikidata.org/entity/"+qid+"> } ." +
-                    " ?s <http://schema.org/about> ?o ." +
-                    " ?s ?p ?o2}";
-            query = QueryFactory.create(construct);
-            qexec = QueryExecutionFactory.sparqlService(endpoint, query);
-
-            constructModel = qexec.execConstruct();
-
-            a = constructModel.listStatements();
-            while (a.hasNext()) {
-                Statement statement = a.next();
-                writer.triple(statement.asTriple());
-            }
-            qexec.close();
-            constructModel.close();
-        }
-
-        List<String> qidsTypes = Arrays.asList("Q6256", "Q12136");
-        for (String qid : qidsTypes){
-            String construct = "CONSTRUCT {?s ?p ?o} where {?s <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/"+qid+"> . ?s ?p ?o}";
-            Query query = QueryFactory.create(construct);
-            QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
-
-            Model constructModel = qexec.execConstruct();
-
-            StmtIterator a = constructModel.listStatements();
-            while (a.hasNext()) {
-                Statement statement = a.next();
-                writer.triple(statement.asTriple());
-            }
-            qexec.close();
-            constructModel.close();
-            //retrive wikipedia links
-            construct = "CONSTRUCT {" +
-                    "?s <http://schema.org/about> ?s ." +
-                    " ?s ?p ?o2} " +
-                    "where {" +
-                    " VALUES ?o { <http://www.wikidata.org/entity/"+qid+"> } ." +
-                    " ?s <http://schema.org/about> ?o ." +
-                    " ?s ?p ?o2}";
-            query = QueryFactory.create(construct);
-            qexec = QueryExecutionFactory.sparqlService(endpoint, query);
-
-            constructModel = qexec.execConstruct();
-
-            a = constructModel.listStatements();
-            while (a.hasNext()) {
-                Statement statement = a.next();
-                writer.triple(statement.asTriple());
-            }
-            qexec.close();
-            constructModel.close();
-
-
-            construct = "CONSTRUCT {" +
-                    "?s <http://schema.org/about> ?s ." +
-                    " ?s ?p ?o2} " +
-                    "where {" +
-                    " ?o <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/"+qid+"> ." +
-                    " ?s <http://schema.org/about> ?o ." +
-                    " ?s ?p ?o2}";
-            query = QueryFactory.create(construct);
-            qexec = QueryExecutionFactory.sparqlService(endpoint, query);
-
-            constructModel = qexec.execConstruct();
-
-            a = constructModel.listStatements();
-            while (a.hasNext()) {
-                Statement statement = a.next();
-                writer.triple(statement.asTriple());
-            }
-            qexec.close();
-            constructModel.close();
-        }
-
-
-        //extracts the information
-        for (AbstractClassMapping mappings : mappingsList) {
-
-            HashMap<String, String> article = new HashMap<String, String>();
-
-            InputStream inputstream = new FileInputStream(mappings.file);
-            JsonReader reader = new JsonReader(new InputStreamReader(inputstream, "UTF-8"));
-
-            String name = "";
-
-            reader.setLenient(true);
-
-
-            HashMap <String,Pattern> fast = new HashMap <>();
-            int count = 0;
-            boolean continuing = true;
-            while (continuing) {
-                if (count%1000 == 0){
-                    System.out.println(count);
-                }
-                String s = "";
-
-                JsonToken token = reader.peek();
-                switch (token) {
-                    case BEGIN_ARRAY:
-                        reader.beginArray();
-                        break;
-                    case END_ARRAY:
-                        reader.endArray();
-                        break;
-                    case BEGIN_OBJECT:
-                        reader.beginObject();
-                        break;
-                    case END_OBJECT:
-                        count++;
-                        //System.out.println(count);
-                        if (reader.getPath().split("\\.").length < 3) {
-                            processMap(article, writer, mappings, fast);
-                            article = new HashMap<String, String>();
+                        StmtIterator a = constructModel.listStatements();
+                        while (a.hasNext())
+                        {
+                            Statement statement = a.next();
+                            writer.triple(statement.asTriple());
                         }
-                        reader.endObject();
-                        break;
-                    case NAME:
-                        name = reader.nextName();
-                        break;
-                    case STRING:
-                        s = reader.nextString();
-                        if (!name.equals(""))
-                            article.put(reader.getPath().replace("$.", ""), s);
-                        break;
-                    case NUMBER:
-                        s = reader.nextString();
-                        if (!name.equals(""))
-                            article.put(reader.getPath().replace("$.", ""), s);
-                        break;
-                    case BOOLEAN:
-                        boolean b = reader.nextBoolean();
-                        break;
-                    case NULL:
-                        reader.nextNull();
-                        break;
-                    case END_DOCUMENT:
-                        continuing = false;
-                        break;
+                        qexec.close();
+                        constructModel.close();
+                    }
                 }
             }
-
-
+//
+            //extracts the information
+            for (AbstractClassMapping mappings : mappingsList) {
+                if (mappings.getFormat().equals("json")) {
+                    parseJson(mappings,writer);
+                }
+                else if(mappings.getFormat().equals("xml"))
+                {
+                    parseXML(mappings,writer);
+                }
+                else
+                {
+                    System.out.println("Error");
+                }
+                writer.finish();
+            }
+        }
     }
-    writer.finish();
-}
+    private int nbOfTimes=0;
+    private void parseXML(AbstractClassMapping mappings, StreamRDF writer) {
+        String iterator = mappings.getIterator();
+        HashMap<String, String> article = new HashMap<>();
+        ArrayList<String> path=new ArrayList<>();
+        try
+        {
+            Stack<String> stack=new Stack<>();
+            String lastElementOnStack="";
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            XMLEventReader eventReader = factory.createXMLEventReader(new FileReader(mappings.getFile()));
+            while (eventReader.hasNext())
+            {
+                XMLEvent event = eventReader.nextEvent();
+                switch (event.getEventType())
+                {
+                    case XMLStreamConstants.START_ELEMENT:
+                        StartElement startElement = event.asStartElement();
+                        String qName = startElement.getName().getLocalPart();
+                        stack.push(qName);
 
-    private static void processMap(HashMap<String, String> article, StreamRDF writer, AbstractClassMapping mappings, HashMap <String,Pattern> fast) {
-
-        Utility utility = new Utility();
-            Node subject = NodeFactory.createURI(mappings.baseUrl + article.get(mappings.getKey()));
-            for (String key : article.keySet()) {
-                for (Mapping mapping : mappings.mappings) {
-                    //System.out.println(key);
-                    Pattern p;
-
-                    if (fast.containsKey(mapping.getTag().toString())){
-                        p = fast.get(mapping.getTag());
-                    } else {
-                        p = Pattern.compile(mapping.getTag());
-                        fast.put(mapping.getTag(),p);
-                    }
-
-                    Matcher m = p.matcher(key);
-                    //System.out.println(key);
-                    if (m.find()) {
-                        //System.out.println("Found "+mapping.getTag());
-                        Node predicate = utility.createURI(mapping.getPropertyUri());
-                        Node object = null;
-                        if (mapping.getType() == null) {
-                            object = NodeFactory.createURI(mapping.getObject());
-                            Triple t = new Triple(subject, predicate, object);
-                            writer.triple(t);
-                        } else {
-
-                            switch (mapping.getType()) {
-                                case LITERAL:
-                                    if (mapping.getDatatype() == null) {
-                                        object = Utility.createLiteral(article.get(key));
-                                        Triple t = new Triple(subject, predicate, object);
-                                        writer.triple(t);
-                                    } else {
-                                        object = Utility.createLiteral(article.get(key), mapping.getDatatype());
-                                        Triple t = new Triple(subject, predicate, object);
-                                        writer.triple(t);
-                                    }
-                                    break;
-                                case URI:
-                                    if (mapping.getBaseurl() != null) {
-                                        object = utility.createURI(mapping.getBaseurl() + article.get(key));
-                                    } else {
-                                        if (article.get(key).startsWith("http://")) {
-                                            object = utility.createURI(article.get(key));
-                                        } else {
-                                            object = utility.createURI(mappings.getBaseUrl() + article.get(key));
-                                        }
-                                    }
-                                    Triple t = new Triple(subject, predicate, object);
-                                    writer.triple(t);
-                                    break;
-                                case URI_WITH_LABEL:
-                                    if (mapping.getBaseurl() != null) {
-                                        object = utility.createURI(mapping.getBaseurl() + article.get(key));
-                                        t = new Triple(subject, predicate, object);
-                                        writer.triple(t);
-                                        t = new Triple(object, utility.createURI("http://www.w3.org/2000/01/rdf-schema#label"), NodeFactory.createLiteral(article.get(key)));
-                                        writer.triple(t);
-                                    } else {
-                                        if (article.get(key).startsWith("http://")) {
-                                            object = utility.createURI(article.get(key));
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                            t = new Triple(object, utility.createURI("http://www.w3.org/2000/01/rdf-schema#label"), NodeFactory.createLiteral(article.get(key)));
-                                            writer.triple(t);
-                                        } else {
-                                            object = utility.createURI(mappings.getBaseUrl() + article.get(key));
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                    }
-
-                                    break;
-                                case DATE:
-                                    object = NodeFactory.createLiteral(article.get(key), XSDDatatype.XSDdateTime);
-                                    break;
-                                case CUSTOM:
-                                    //custom age
-                                    if (mapping.getTag().contains("minAge")) {
-                                        //System.out.println("Hello");
-                                        int minAge = Integer.parseInt(article.get(key).replace(".0", ""));
-                                        int maxAge = 100;
-                                        if (article.containsKey(key.replace("minAge", "maxAge").replace(".0", ""))) {
-                                            maxAge = Integer.parseInt(article.get(key.replace("minAge", "maxAge")).replace(".0", ""));
-
-                                        }
-                                        for (Integer k = minAge; k <= maxAge; k++) {
-                                            object = NodeFactory.createLiteral(k.toString(), XSDinteger);
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                    } else if (mapping.getTag().contains("maxAge")) {
-                                        int maxAge = Integer.parseInt(article.get(key).replace(".0", ""));
-                                        int minAge = 0;
-                                        if (article.containsKey(key.replace("maxAge", "minAge"))) {
-                                            minAge = Integer.parseInt(article.get(key.replace("maxAge", "minAge")).replace(".0", ""));
-
-                                        }
-                                        for (Integer k = minAge; k <= maxAge; k++) {
-                                            object = NodeFactory.createLiteral(k.toString(), XSDinteger);
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                    }
-                                    //custom for gender
-                                    if (mapping.getTag().contains("gender")) {
-                                        if (article.get(key).equals("Both")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q467");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q8441");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        } else if (article.get(key).equals("Male")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q8441");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        } else if (article.get(key).equals("Female")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q467");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                    }
-                                    //custum for clinical phase
-                                    if (mapping.getTag().contains("trialPhase")) {
-                                        if (article.get(key).equals("I") || article.get(key).contains("I/")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q42824069");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).equals("II") || article.get(key).contains("II/") || article.get(key).contains("/II")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q42824440");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).contains("III") || article.get(key).contains("III/") || article.get(key).contains("/III")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q42824827");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).contains("IV") || article.get(key).contains("/IV")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q42825046");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                    }
-
-
-
-
-
-
-
-
-
-
-
-                                    //custom for region
-                                    if (mapping.getTag().contains("trialRegions")) {
-                                        if (article.get(key).equals("Africa")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q15");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).equals("South America")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q18");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).equals("Europe")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q46");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).equals("Asia")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q48");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).equals("North America")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q49");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).equals("Eastern Europe")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q27468");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).equals("Middle East")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q7204");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).equals("Americas")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q828");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).equals("Australia/Oceania")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q538");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q408");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                        if (article.get(key).equals("Western Asia/Middle East")) {
-                                            object = NodeFactory.createURI("http://www.wikidata.org/entity/Q7204");
-                                            t = new Triple(subject, predicate, object);
-                                            writer.triple(t);
-                                        }
-                                    }
-                                    // custom name
-                                    if (mapping.getTag().contains("investigatorFirstName")) {
-                                        object = NodeFactory.createLiteral(article.get(key) + " " + article.get(key.replace("investigatorFirstName", "investigatorLastName")));
-                                        t = new Triple(subject, predicate, object);
-                                        writer.triple(t);
-                                    }
-                                    if (key.contains("investigatorGeoLocation.lat") && article.get(key)!=null) {
-                                        //"Point(12.482777777778 41.893055555556)"^^<http://www.opengis.net/ont/geosparql#wktLiteral>
-                                        object = NodeFactory.createLiteral("Point(" + article.get(key) + " " + article.get(key.replace("investigatorGeoLocation.lon", "investigatorGeoLocation.lat")) + ")^^<http://www.opengis.net/ont/geosparql#wktLiteral>");
-                                        t = new Triple(subject, predicate, object);
-                                        writer.triple(t);
-                                    }
-                                    if (key.contains("organizationGeoLocation.latitude") && article.get(key)!= null) {
-                                        //System.out.println(key);
-                                        //"Point(12.482777777778 41.893055555556)"^^<http://www.opengis.net/ont/geosparql#wktLiteral>
-                                        object = NodeFactory.createLiteral("Point(" + article.get(key) + " " + article.get(key.replace("longitude", "latitude")) + ")^^<http://www.opengis.net/ont/geosparql#wktLiteral>");
-                                        t = new Triple(subject, predicate, object);
-                                        writer.triple(t);
-                                    }
-                                    if (key.contains("organizationTrials")){
-                                        object = NodeFactory.createURI(mapping.getBaseurl()+article.get(key));
-                                        t = new Triple(subject, predicate, object);
-                                        writer.triple(t);
-                                        //System.out.println(t.getSubject().toString()+"--"+t.getPredicate().toString()+"--"+t.getObject().toString());
-                                        t = new Triple(object,NodeFactory.createURI("http://www.wikidata.org/prop/direct/P625"),NodeFactory.createLiteral("Point(" + article.get("organizationGeoLocation.longitude") + " " + article.get("organizationGeoLocation.latitude") + ")^^<http://www.opengis.net/ont/geosparql#wktLiteral>"));
-                                        writer.triple(t);
-                                    }
+                        path.add(qName);
+//                        System.out.println(splitByPoints(path));
+//                        System.out.println(lastElementOnStack);
+//                        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`");
+                        if(qName.equals(lastElementOnStack))
+                        {
+                            String arrayPath=path.get(path.size()-2);
+                            if(arrayPath.length()>3)
+                            {
+                                String number= StringUtils.substringBetween(arrayPath, "[", "]");
+                                if(NumberUtils.isNumber(number))
+                                {
+                                    int newNbOfTimes=Integer.parseInt(number)+1;
+                                    String newArrayPath=(arrayPath.split("\\[(.*?)\\]"))[0];
+                                    newArrayPath=newArrayPath+"["+newNbOfTimes+"]";
+                                    path.remove(path.size()-2);
+                                    path.add(path.size()-1,newArrayPath);
+                                }
+                                else
+                                {
+                                    arrayPath=arrayPath+"["+nbOfTimes+"]";
+                                    path.remove(path.size()-2);
+                                    path.add(path.size()-1,arrayPath);
+                                    nbOfTimes++;
+                                }
                             }
                         }
+                        else
+                            nbOfTimes=0;
+//                        System.out.println(splitByPoints(path));
+//                        System.out.println("==============================================");
+                        String pathString;
+                        Iterator attributes = event.asStartElement().getAttributes();
+                        while(attributes.hasNext())
+                        {
+                            Attribute attribute = (Attribute) attributes.next();
+                            path.add(attribute.getName().toString());
+                            article.put(splitByPoints(path),attribute.getValue());
+                            path.remove(path.size()-1);
+                        }
+                        break;
+                    case XMLStreamConstants.CHARACTERS:
+                        Characters characters = event.asCharacters();
+                        String data=characters.getData();
+                        if(!data.trim().equals(""))
+                        {
+                            article.put(splitByPoints(path), data.trim());
+                        }
+                        break;
+                    case XMLStreamConstants.END_ELEMENT:
+                        event.asEndElement();
+                        if(stack.size()!=0)
+                            lastElementOnStack=stack.pop();
+                        path.remove(path.size()-1);
+                        pathString=splitByPoints(path);
+                        if(pathString.replaceAll("\\[(.*?)]", "").replace("$.", "").equals(iterator))
+                        {
+//                            System.out.println(article);
+                            processMap(article, writer, mappings);
+                            article = new HashMap<>();
+                        }
+                        break;
+                    case XMLStreamConstants.END_DOCUMENT:
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void parseJson(AbstractClassMapping mappings,StreamRDF writer) throws Exception{
+        String iterator = mappings.getIterator();
+        int counterNew = 0;
+        int counterOld = -1;
+        HashMap<String, String> article = new HashMap<>();
+        InputStream inputstream = new FileInputStream(mappings.file);
+        JsonReader reader = new JsonReader(new InputStreamReader(inputstream, "UTF-8"));
+        String name = "";
+        reader.setLenient(true);
+
+        boolean continuing = true;
+        while (continuing) {
+            String s;
+            JsonToken token = reader.peek();
+            switch (token) {
+                case BEGIN_ARRAY:
+                    reader.beginArray();
+                    break;
+                case END_ARRAY:
+                    reader.endArray();
+                    break;
+                case BEGIN_OBJECT:
+                    if (reader.getPath().replaceAll("\\[(.*?)]", "").replace("$.", "").equals(iterator))
+                    {
+                        String[] list = iterator.split("\\.");
+                        String arrayString = list[list.length - 1];
+                        Pattern pattern = Pattern.compile(arrayString + "\\[(.*?)]");
+                        Matcher matcher = pattern.matcher(reader.getPath());
+                        if (matcher.find())
+                        {
+                            counterNew = Integer.parseInt(matcher.group(1));
+                            counterOld = -1;
+                        }
+                    }
+                    reader.beginObject();
+                    break;
+                case END_OBJECT:
+                    reader.endObject();
+                    if (reader.getPath().replaceAll("\\[(.*?)]", "").replace("$.", "").equals(iterator) && counterNew != counterOld) {
+                        counterOld = counterNew;
+                        processMap(article, writer, mappings);
+                        article = new HashMap<>();
+                    }
+                    break;
+                case NAME:
+                    name = reader.nextName();
+                    break;
+                case STRING:
+                case NUMBER:
+                    s = reader.nextString();
+                    if (!name.equals(""))
+                        article.put(reader.getPath().replace("$.", ""), s);
+
+                    break;
+                case BOOLEAN:
+                    reader.nextBoolean();
+                    break;
+                case NULL:
+                    reader.nextNull();
+                    break;
+                case END_DOCUMENT:
+                    continuing = false;
+                    break;
+            }
+        }
+    }
+
+    public static void main(String[] argv) throws Exception {
+        Main2 main = new Main2();
+            JCommander.newBuilder()
+                    .addObject(main)
+                    .build()
+                    .parse(argv);
+            main.run();
+
+}
+
+    private static void processMap(HashMap<String, String> article, StreamRDF writer, AbstractClassMapping mappings) {
+        for (Mapping mapping : mappings.mappings)
+        {
+            ArrayList<Triple> triples = getObjects(mapping, mappings, article);
+            for (Triple triple : triples) {
+                writer.triple(triple);
+            }
+        }
+    }
+
+    private static String splitByPoints(List<String> array) {
+        String result = "";
+        if (array.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (String s : array) {
+                sb.append(s).append(".");
+            }
+            result = sb.deleteCharAt(sb.length() - 1).toString();
+        }
+        return result;
+    }
+    public static Node getSubject(HashMap<String,String> article,AbstractClassMapping mappings,String key)
+    {
+        Utility utility=new Utility();
+        String keyWithoutBrackets = key.replaceAll("\\[(.*?)]", "");
+        List<String> arrayMappingsKey = new ArrayList<>(Arrays.asList(mappings.getKey().split("\\.")));
+        List<String> arrayKeyArticle = new ArrayList<>(Arrays.asList(keyWithoutBrackets.split("\\.")));
+        String[] keySplitted = key.replace("$.", "").split("\\.");
+        ArrayList<String> finalSubject = new ArrayList<>();
+        for (int i = 0; i < arrayMappingsKey.size(); i++)
+        {
+            if (i < arrayKeyArticle.size())
+            {
+                if (arrayKeyArticle.get(i).equals(arrayMappingsKey.get(i)))
+                {
+                    finalSubject.add(keySplitted[i]);
+                }
+                else {
+                    finalSubject.add(arrayMappingsKey.get(i));
+                }
+            }
+            else {
+                finalSubject.add(arrayMappingsKey.get(i));
+            }
+        }
+        String uri=mappings.baseUrl + article.get(splitByPoints(finalSubject));
+        String [] array=uri.split(" ");
+        String newUri=String.join("_",array);
+
+        return (Utility.createURI(newUri));
+    }
+    private static Node getPredicate(Mapping mapping)
+    {
+        Utility utility = new Utility();
+        return utility.createURI(mapping.getPropertyUri());
+    }
+    private static ArrayList<Triple> getObjects(Mapping mapping, AbstractClassMapping mappings, HashMap<String,String> article) {
+        ArrayList<Triple> triples = new ArrayList<>();
+        HashMap<String, Pattern> fast=new HashMap<>();
+        Node subject, predicate, object;
+        Utility utility = new Utility();
+        for (String key : article.keySet())
+        {
+            Pattern p;
+            if (fast.containsKey(mapping.getTag()))
+            {
+                p = fast.get(mapping.getTag());
+            }
+            else {
+                p = Pattern.compile(mapping.getTag());
+                fast.put(mapping.getTag(), p);
+            }
+            Matcher m = p.matcher(key);
+            if (m.find())
+            {
+                if (mapping.getType() == null)
+                {
+                    subject = getSubject(article, mappings, key);
+                    predicate = getPredicate(mapping);
+                    object = Utility.createURI(mapping.getObject());
+                    triples.add(new Triple(subject, predicate, object));
+                }
+                else {
+                    switch (mapping.getType())
+                    {
+                        case LITERAL:
+                            if (mapping.getDatatype() == null)
+                            {
+                                subject = getSubject(article, mappings, key);
+                                predicate = getPredicate(mapping);
+                                object = Utility.createLiteral(article.get(key));
+                                triples.add(new Triple(subject, predicate, object));
+                            }
+                            else {
+                                subject = getSubject(article, mappings, key);
+                                predicate = getPredicate(mapping);
+                                object = Utility.createLiteral(article.get(key), mapping.getDatatype());
+                                triples.add(new Triple(subject, predicate, object));
+                            }
+                            break;
+                        case URI:
+                            if (mapping.getBaseurl() != null) {
+                                subject = getSubject(article, mappings, key);
+                                predicate = getPredicate(mapping);
+                                object = utility.createURI(mapping.getBaseurl() + article.get(key));
+                                triples.add(new Triple(subject, predicate, object));
+                            } else {
+                                if (article.get(key).startsWith("http://")) {
+                                    subject = getSubject(article, mappings, key);
+                                    predicate = getPredicate(mapping);
+                                    object = utility.createURI(article.get(key));
+                                    triples.add(new Triple(subject, predicate, object));
+                                } else {
+                                    subject = getSubject(article, mappings, key);
+                                    predicate = getPredicate(mapping);
+                                    object = utility.createURI(mappings.getBaseUrl() + article.get(key));
+                                    triples.add(new Triple(subject, predicate, object));
+                                }
+                            }
+                            break;
+                        case URI_WITH_LABEL:
+                            if (mapping.getBaseurl() != null)
+                            {
+                                subject = getSubject(article, mappings, key);
+                                predicate = getPredicate(mapping);
+                                object = utility.createURI(mapping.getBaseurl() + article.get(key));
+                                triples.add(new Triple(subject, predicate, object));
+
+                                subject = object;
+                                predicate = utility.createURI("http://www.w3.org/2000/01/rdf-schema#label");
+                                object = NodeFactory.createLiteral(article.get(key));
+                                triples.add(new Triple(subject, predicate, object));
+                            }
+                            else {
+                                if (article.get(key).startsWith("http://")) {
+                                    subject = getSubject(article, mappings, key);
+                                    predicate = getPredicate(mapping);
+                                    object = utility.createURI(article.get(key));
+                                    triples.add(new Triple(subject, predicate, object));
+
+                                    subject = object;
+                                    predicate = utility.createURI("http://www.w3.org/2000/01/rdf-schema#label");
+                                    object = NodeFactory.createLiteral(article.get(key));
+                                    triples.add(new Triple(subject, predicate, object));
+
+                                } else {
+                                    subject = getSubject(article, mappings, key);
+                                    predicate = getPredicate(mapping);
+                                    object = utility.createURI(mappings.getBaseUrl() + article.get(key));
+                                    triples.add(new Triple(subject, predicate, object));
+
+                                }
+                            }
+                            break;
+                        case DATE:
+//                            object = NodeFactory.createLiteral(article.get(key), XSDDatatype.XSDdateTime);
+                            break;
+                        case CUSTOM:
+                            triples.addAll(mapping.getCustomMapping().function(article, key));
+                            break;
                     }
                 }
             }
         }
+        return triples;
     }
+    public String printHashmap(HashMap<String, String> map) {
+        StringBuilder sb = new StringBuilder();
+        Iterator<Map.Entry<String, String>> iter = map.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<String, String> entry = iter.next();
+            sb.append(entry.getKey());
+            sb.append('=').append('"');
+            sb.append(entry.getValue());
+            sb.append('"');
+            if (iter.hasNext()) {
+                sb.append(',').append('\n');
+            }
+        }
+        return sb.toString();
+
+    }
+}
 
