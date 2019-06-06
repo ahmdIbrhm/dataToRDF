@@ -17,7 +17,7 @@ public class Trial extends AbstractClassMapping {
     public Trial(){
         format = "json";
         file = "/Users/Dennis/PycharmProjects/TrialTrove/crawl_trials";
-        baseUrl = "https://citeline.eu.qanswer.mapping.informa.com/trials/details/";
+        baseUrl = "https://citeline.informa.com/trials/details/";
         key = "trialId";
         mappings = new ArrayList<Mapping>(Arrays.asList(
                 new Mapping("trialId", "http://www.w3.org/2000/01/rdf-schema#type", "http://www.wikidata.org/entity/Q30612"),
@@ -49,8 +49,8 @@ public class Trial extends AbstractClassMapping {
                 new Mapping("trialStudyKeywords(.?)","http://www.wikidata.org/prop/direct/P921", Type.LITERAL,XSDstring),
                 new Mapping("trialPatientPopulation","http://www.newclean.eu/patientPopulation", Type.LITERAL,XSDstring),
                 new Mapping("trialTreatmentPlan","http://www.newclean.eu/patientPopulation", Type.LITERAL,XSDstring),
-                new Mapping("trialTargetAccrual","http://www.newclean.eu/tragetNumberPatients", Type.LITERAL, XSDinteger),
-                new Mapping("trialActualAccrual","http://www.newclean.eu/currentNumberPatients", Type.LITERAL, XSDinteger),
+                new Mapping("trialTargetAccrual","http://www.newclean.eu/tragetNumberPatients", Type.CUSTOM),
+                new Mapping("trialActualAccrual","http://www.newclean.eu/currentNumberPatients", Type.CUSTOM),
                 new Mapping("trialInvestigators(.?)","http://www.wikidata.org/prop/direct/P1840", "https://citeline.eu.qanswer.mapping.informa.com/investigators/details/", Type.URI),
                 //new Mapping("(.*)trialSupportingUrls","http://www.wikidata.org/prop/direct/P1840", "" ,Type.URI),
                 new Mapping("trialSource","http://www.newclean.eu/source", Type.LITERAL)

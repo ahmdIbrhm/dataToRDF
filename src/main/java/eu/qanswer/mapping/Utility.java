@@ -13,6 +13,7 @@ public class Utility {
 
     public static Node createURI(String s){
         s = s.replace(" ","_");
+        s = s.replace("\"","");
         s = removeSpecialCharacteres(s);
         return NodeFactory.createURI(s);
     }

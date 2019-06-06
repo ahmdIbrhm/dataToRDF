@@ -11,7 +11,7 @@ public class Organization extends AbstractClassMapping {
 
     public Organization(){
         file = "/Users/Dennis/PycharmProjects/TrialTrove/crawl_organizations_old";
-        baseUrl = "https://citeline.eu.qanswer.mapping.informa.com/organizations/details/";
+        baseUrl = "https://citeline.informa.com/organizations/details/";
         key = "organizationId";
         mappings = new ArrayList<Mapping>(Arrays.asList(
                 new Mapping("organizationName", "http://www.w3.org/2000/01/rdf-schema#label", Type.LITERAL),
