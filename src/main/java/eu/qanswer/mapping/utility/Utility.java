@@ -1,4 +1,4 @@
-package eu.qanswer.mapping;
+package eu.qanswer.mapping.utility;
 
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Node;

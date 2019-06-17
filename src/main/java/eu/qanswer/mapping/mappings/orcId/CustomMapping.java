@@ -1,8 +1,7 @@
-package eu.qanswer.mapping.orcId;
+package eu.qanswer.mapping.mappings.orcId;
 
-import eu.qanswer.mapping.Mapping;
+import eu.qanswer.mapping.configuration.Mapping;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.riot.system.StreamRDF;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -7,6 +7,11 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.opencsv.CSVReader;
 
+import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.CSVConfiguration;
+import eu.qanswer.mapping.configuration.Mapping;
+import eu.qanswer.mapping.utility.Utility;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.jena.graph.Node;
@@ -40,7 +45,6 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.sound.midi.Soundbank;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -49,8 +53,8 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-public class Main2 {
-//    "java -jar target/eu.wdaqua.semanticscholar-1.0-SNAPSHOT-jar-with-dependencies.jar -f eu.qanswer.mapping.orcId.OrcId,eu.qanswer.mapping.orcId.OrgStudy,eu.qanswer.mapping.orcId.OrgWork,eu.qanswer.mapping.orcId.Publication -o orcid.ttl"
+public class Main {
+//    "java -jar target/eu.wdaqua.semanticscholar-1.0-SNAPSHOT-jar-with-dependencies.jar -f eu.qanswer.mapping.mappings.orcId.OrcId,eu.qanswer.mapping.mappings.orcId.OrgStudy,eu.qanswer.mapping.mappings.orcId.OrgWork,eu.qanswer.mapping.mappings.orcId.Publication -o orcid.ttl"
 
 
     private static final String endpoint = "http://qanswer-core1.univ-st-etienne.fr/api/endpoint/wikidata/sparql";
@@ -78,20 +82,20 @@ public class Main2 {
         else {
             StreamRDF writer = StreamRDFWriter.getWriterStream(new FileOutputStream(new File(outputFilePath)), RDFFormat.NTRIPLES);
             //uses links to extract important information from wikidata
-            List<AbstractClassMapping> mappingsList = new ArrayList<>();
+            List<AbstractConfiguration> mappingsList = new ArrayList<>();
             String[] files = filesArguments.split(",");
             for (String filePath : files) {
                 Class<?> aClass;
                 try {
                     aClass = Class.forName(filePath.trim());
                     Constructor<?> ctor = aClass.getConstructor();
-                    AbstractClassMapping object = (AbstractClassMapping) ctor.newInstance();
+                    AbstractConfiguration object = (AbstractConfiguration) ctor.newInstance();
                     mappingsList.add(object);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            for (AbstractClassMapping mappings : mappingsList) {
+            for (AbstractConfiguration mappings : mappingsList) {
                 for (Mapping m : mappings.mappings) {
                     if (m.getPropertyUri().contains("http://www.wikidata.org/prop/direct/")) {
                         String construct = "CONSTRUCT {?s <http://wikiba.se/ontology#directClaim> <" + m.getPropertyUri() + "> . ?s ?p ?o} where { " +
@@ -115,14 +119,14 @@ public class Main2 {
             }
 //
             //extracts the information
-            for (AbstractClassMapping mappings : mappingsList) {
+            for (AbstractConfiguration mappings : mappingsList) {
                 if (mappings.getFormat().equals("json")) {
                     parseJson(mappings,writer);
                 } else if(mappings.getFormat().equals("xml")) {
                     parseXML(mappings,writer);
                 }
                 else if (mappings.getFormat().equals("csv")){
-                    parseCSV((CSVClassMapping) mappings,writer);
+                    parseCSV((CSVConfiguration) mappings,writer);
                 } else {
                     System.out.println("Error");
                 }
@@ -131,7 +135,7 @@ public class Main2 {
         }
     }
     private int nbOfTimes=0;
-    private void parseXML(AbstractClassMapping mappings, StreamRDF writer) {
+    private void parseXML(AbstractConfiguration mappings, StreamRDF writer) {
         String iterator = mappings.getIterator();
         HashMap<String, String> article = new HashMap<>();
         ArrayList<String> path=new ArrayList<>();
@@ -221,7 +225,7 @@ public class Main2 {
             e.printStackTrace();
         }
     }
-    private void parseJson(AbstractClassMapping mappings,StreamRDF writer) throws Exception{
+    private void parseJson(AbstractConfiguration mappings, StreamRDF writer) throws Exception{
         String iterator = mappings.getIterator();
         int counterNew = 0;
         int counterOld = -1;
@@ -287,7 +291,7 @@ public class Main2 {
             }
         }
     }
-    private void parseCSV(CSVClassMapping mappings,StreamRDF writer) throws Exception{
+    private void parseCSV(CSVConfiguration mappings, StreamRDF writer) throws Exception{
         CSVReader reader = new CSVReader(new FileReader(mappings.file),mappings.separator);
         String [] nextLine;
         System.out.println("Reading header of the CSV file ...");
@@ -306,7 +310,7 @@ public class Main2 {
     }
 
     public static void main(String[] argv) throws Exception {
-        Main2 main = new Main2();
+        Main main = new Main();
             JCommander.newBuilder()
                     .addObject(main)
                     .build()
@@ -315,7 +319,7 @@ public class Main2 {
 
 }
 
-    private static void processMap(HashMap<String, String> article, StreamRDF writer, AbstractClassMapping mappings) {
+    private static void processMap(HashMap<String, String> article, StreamRDF writer, AbstractConfiguration mappings) {
         for (Mapping mapping : mappings.mappings)
         {
             ArrayList<Triple> triples = getObjects(mapping, mappings, article);
@@ -336,7 +340,7 @@ public class Main2 {
         }
         return result;
     }
-    public static Node getSubject(HashMap<String,String> article,AbstractClassMapping mappings,String key)
+    public static Node getSubject(HashMap<String,String> article, AbstractConfiguration mappings, String key)
     {
         Utility utility=new Utility();
         String keyWithoutBrackets = key.replaceAll("\\[(.*?)]", "");
@@ -371,7 +375,7 @@ public class Main2 {
         Utility utility = new Utility();
         return utility.createURI(mapping.getPropertyUri());
     }
-    private static ArrayList<Triple> getObjects(Mapping mapping, AbstractClassMapping mappings, HashMap<String,String> article) {
+    private static ArrayList<Triple> getObjects(Mapping mapping, AbstractConfiguration mappings, HashMap<String,String> article) {
         ArrayList<Triple> triples = new ArrayList<>();
         HashMap<String, Pattern> fast=new HashMap<>();
         Node subject, predicate, object;

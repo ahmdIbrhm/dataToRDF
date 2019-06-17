@@ -1,6 +1,7 @@
 package eu.qanswer.mapping;
 
-import org.apache.jena.graph.Node;
+import eu.qanswer.mapping.utility.Parser;
+
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.QueryExecution;
@@ -13,25 +14,13 @@ import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.lang.PipedRDFIterator;
 import org.apache.jena.riot.system.StreamRDF;
 import org.apache.jena.riot.system.StreamRDFWriter;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.rdfhdt.hdt.hdt.HDTManager;
 import org.rdfhdt.hdtjena.HDTGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 public class Substitute {
 
@@ -89,9 +78,9 @@ public class Substitute {
             if (t.getPredicate().toString().equals("http://www.wikidata.org/prop/direct/P17")) {
                 String query = "Select ?s where {" +
                         " OPTIONAL { ?s <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q6256> ." +
-                        " ?s <http://www.w3.org/2000/01/rdf-schema#label> \"" + t.getObject().toString().replace("https://citeline.eu.qanswer.mapping.informa.com/trials/details/", "").replace("_", " ") + "\"@en  } ." +
+                        " ?s <http://www.w3.org/2000/01/rdf-schema#label> \"" + t.getObject().toString().replace("https://citeline.eu.qanswer.mapping.mappings.informa.com/trials/details/", "").replace("_", " ") + "\"@en  } ." +
                         " OPTIONAL { ?s <http://www.wikidata.org/prop/direct/P31> <http://www.wikidata.org/entity/Q6256> ." +
-                        " ?s <http://www.w3.org/2004/02/skos/core#altLabel> \"" + t.getObject().toString().replace("https://citeline.eu.qanswer.mapping.informa.com/trials/details/", "").replace("_", " ") + "\"@en } ." +
+                        " ?s <http://www.w3.org/2004/02/skos/core#altLabel> \"" + t.getObject().toString().replace("https://citeline.eu.qanswer.mapping.mappings.informa.com/trials/details/", "").replace("_", " ") + "\"@en } ." +
                         " } ";
                 System.out.println(query);
                 QueryExecution qe = QueryExecutionFactory.create(query, model);

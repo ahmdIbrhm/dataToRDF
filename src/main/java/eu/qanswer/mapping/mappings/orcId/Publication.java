@@ -1,7 +1,11 @@
-package eu.qanswer.mapping.orcId;
+package eu.qanswer.mapping.mappings.orcId;
 
 import eu.qanswer.mapping.*;
-import org.apache.jena.datatypes.xsd.impl.XSDYearType;
+import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.Mapping;
+import eu.qanswer.mapping.configuration.Type;
+import eu.qanswer.mapping.utility.Utility;
+
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
@@ -12,7 +16,7 @@ import java.util.HashMap;
 
 import static org.apache.jena.datatypes.xsd.XSDDatatype.*;
 
-public class Publication extends AbstractClassMapping {
+public class Publication extends AbstractConfiguration {
     //the url used for all instances
     Publication publication=this;
     public Publication(){
@@ -39,7 +43,7 @@ public class Publication extends AbstractClassMapping {
             Utility utility = new Utility();
             ArrayList<Triple> triples=new ArrayList<>();
             Node predicate = utility.createURI(getMapping().getPropertyUri());
-            Node subject = Main2.getSubject(article,publication,key);
+            Node subject = Main.getSubject(article,publication,key);
             if(getMapping().getTag().contains("external-id-value"))
             {
                 String type=article.get(key.replace("value","type"));

@@ -1,10 +1,10 @@
-package eu.qanswer.mapping.informa;
+package eu.qanswer.mapping.mappings.informa;
 
-import eu.qanswer.mapping.AbstractClassMapping;
-import eu.qanswer.mapping.Mapping;
-import eu.qanswer.mapping.Type;
-import eu.qanswer.mapping.Utility;
-import eu.qanswer.mapping.orcId.CustomMapping;
+import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.Mapping;
+import eu.qanswer.mapping.configuration.Type;
+import eu.qanswer.mapping.utility.Utility;
+import eu.qanswer.mapping.mappings.orcId.CustomMapping;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Trial extends AbstractClassMapping {
+public class Trial extends AbstractConfiguration {
     //the url used for all instances
     private Trial trial=this;
     public Trial(){
@@ -59,7 +59,7 @@ public class Trial extends AbstractClassMapping {
 //    ));
 //=======
         file = "C:\\Users\\My pc\\Desktop\\dumps\\trial.json";
-        baseUrl = "https://citeline.eu.qanswer.mapping.informa.com/trials/details/";
+        baseUrl = "https://citeline.eu.qanswer.mapping.mappings.informa.com/trials/details/";
         key = "trialId";
         mappings = new ArrayList<>(Arrays.asList(
 //                new Mapping("trialId", "http://www.w3.org/2000/01/rdf-schema#type", "http://www.wikidata.org/entity/Q30612"),

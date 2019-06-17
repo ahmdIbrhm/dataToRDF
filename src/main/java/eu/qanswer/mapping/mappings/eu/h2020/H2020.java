@@ -1,14 +1,13 @@
-package eu.qanswer.mapping.eu.h2020;
+package eu.qanswer.mapping.mappings.eu.h2020;
 
-import eu.qanswer.mapping.AbstractClassMapping;
-import eu.qanswer.mapping.CSVClassMapping;
-import eu.qanswer.mapping.Mapping;
-import eu.qanswer.mapping.Type;
+import eu.qanswer.mapping.configuration.CSVConfiguration;
+import eu.qanswer.mapping.configuration.Mapping;
+import eu.qanswer.mapping.configuration.Type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class H2020 extends CSVClassMapping {
+public class H2020 extends CSVConfiguration {
 
     public H2020(){
         format = "csv";

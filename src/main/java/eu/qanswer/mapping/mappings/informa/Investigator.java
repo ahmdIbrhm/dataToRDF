@@ -1,17 +1,16 @@
-package eu.qanswer.mapping.informa;
+package eu.qanswer.mapping.mappings.informa;
 
-import eu.qanswer.mapping.AbstractClassMapping;
-import eu.qanswer.mapping.Mapping;
-import eu.qanswer.mapping.Type;
+import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.Mapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Investigator extends AbstractClassMapping {
+public class Investigator extends AbstractConfiguration {
 
     public Investigator(){
         file = "/Users/Dennis/PycharmProjects/TrialTrove/crawl_investigators";
-        baseUrl = "https://citeline.eu.qanswer.mapping.informa.com/investigators/details/";
+        baseUrl = "https://citeline.eu.qanswer.mapping.mappings.informa.com/investigators/details/";
         key = "investigatorId";
         mappings = new ArrayList<Mapping>(Arrays.asList(
 //                new Mapping("investigatorId", "http://www.w3.org/2000/01/rdf-schema#type", "http://www.wikidata.org/entity/Q30093123"),

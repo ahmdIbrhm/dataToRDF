@@ -1,13 +1,13 @@
-package eu.qanswer.mapping.orcId;
+package eu.qanswer.mapping.mappings.orcId;
 
-import eu.qanswer.mapping.AbstractClassMapping;
-import eu.qanswer.mapping.Mapping;
-import eu.qanswer.mapping.Type;
+import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.Mapping;
+import eu.qanswer.mapping.configuration.Type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class OrcId extends AbstractClassMapping {
+public class OrcId extends AbstractConfiguration {
     //the url used for all instances
 
     public OrcId(){

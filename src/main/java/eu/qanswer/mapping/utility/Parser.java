@@ -1,4 +1,4 @@
-package eu.qanswer.mapping;
+package eu.qanswer.mapping.utility;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

@@ -1,7 +1,7 @@
-package eu.qanswer.mapping.semanticscholar;
+package eu.qanswer.mapping.mappings.semanticscholar;
 
-import eu.qanswer.mapping.Mapping;
-import eu.qanswer.mapping.Type;
+import eu.qanswer.mapping.configuration.Mapping;
+import eu.qanswer.mapping.configuration.Type;
 
 import org.apache.commons.lang3.ObjectUtils;
 

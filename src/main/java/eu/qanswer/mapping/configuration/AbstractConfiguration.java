@@ -1,4 +1,4 @@
-package eu.qanswer.mapping;
+package eu.qanswer.mapping.configuration;
 
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractClassMapping {
+public abstract class AbstractConfiguration {
 
     //the url used for all instances
     public String format;
