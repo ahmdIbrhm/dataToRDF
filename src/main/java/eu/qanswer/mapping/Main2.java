@@ -3,6 +3,10 @@ package eu.qanswer.mapping;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.opencsv.CSVReader;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.jena.graph.Node;
@@ -20,29 +24,30 @@ import org.apache.jena.riot.system.StreamRDF;
 import org.apache.jena.riot.system.StreamRDFWriter;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 
+import javax.sound.midi.Soundbank;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
-import java.io.*;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
-import javax.xml.stream.events.EndElement;
-import org.apache.commons.lang3.ObjectUtils;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
 
 public class Main2 {
 //    "java -jar target/eu.wdaqua.semanticscholar-1.0-SNAPSHOT-jar-with-dependencies.jar -f eu.qanswer.mapping.orcId.OrcId,eu.qanswer.mapping.orcId.OrgStudy,eu.qanswer.mapping.orcId.OrgWork,eu.qanswer.mapping.orcId.Publication -o orcid.ttl"
@@ -56,13 +61,17 @@ public class Main2 {
     private String filesArguments;
 
     @Parameter(names = {"--outputFilePath", "-o"})
-    private String outputFilePath="C:\\Users\\My pc\\Desktop\\orcid.ttl";
+    private String outputFilePath="test.out";
 
     @Parameter(names = "--help", help = true)
     private boolean help = false;
 
 
     public void run() throws Exception {
+        if (filesArguments == null){
+            System.out.println("Specify the --filesArguments argument, or --help if you need more information");
+            return;
+        }
         if (help) {
             System.out.println("Help Yourself");
         }
@@ -109,13 +118,12 @@ public class Main2 {
             for (AbstractClassMapping mappings : mappingsList) {
                 if (mappings.getFormat().equals("json")) {
                     parseJson(mappings,writer);
-                }
-                else if(mappings.getFormat().equals("xml"))
-                {
+                } else if(mappings.getFormat().equals("xml")) {
                     parseXML(mappings,writer);
                 }
-                else
-                {
+                else if (mappings.getFormat().equals("csv")){
+                    parseCSV((CSVClassMapping) mappings,writer);
+                } else {
                     System.out.println("Error");
                 }
                 writer.finish();
@@ -279,6 +287,23 @@ public class Main2 {
             }
         }
     }
+    private void parseCSV(CSVClassMapping mappings,StreamRDF writer) throws Exception{
+        CSVReader reader = new CSVReader(new FileReader(mappings.file),mappings.separator);
+        String [] nextLine;
+        System.out.println("Reading header of the CSV file ...");
+        String [] header = reader.readNext();
+        for (int i=0; i<header.length; i++) {
+            System.out.println(header[i]);
+        }
+        HashMap<String, String> article = new HashMap<>();
+        System.out.println("Reading the CSV file ...");
+        while ((nextLine = reader.readNext()) != null) {
+            for (int i=0; i<nextLine.length; i++){
+                article.put(header[i],nextLine[i]);
+            }
+            processMap(article, writer, mappings);
+        }
+    }
 
     public static void main(String[] argv) throws Exception {
         Main2 main = new Main2();
@@ -354,7 +379,12 @@ public class Main2 {
         for (String key : article.keySet())
         {
             Pattern p;
-            if (fast.containsKey(mapping.getTag()))
+            System.out.println(mapping.getType());
+            System.out.println(mapping.getTag());
+            if (mappings.format.equals("csv")) {
+                p = Pattern.compile("^"+mapping.getTag()+"$");
+                //p = fast.get("^"+mapping.getTag()+"$");
+            } else if (fast.containsKey(mapping.getTag()))
             {
                 p = fast.get(mapping.getTag());
             }
