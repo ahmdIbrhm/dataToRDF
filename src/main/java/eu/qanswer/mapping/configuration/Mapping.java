@@ -16,6 +16,7 @@ public class Mapping {
         this.tag = tag;
         this.propertyUri = propertyUri;
         this.object = objectUri;
+        this.type=Type.CLASS;
     }
 
     public Mapping(String tag, String propertyUri, String baseurl, CustomMapping customMapping, Type type){

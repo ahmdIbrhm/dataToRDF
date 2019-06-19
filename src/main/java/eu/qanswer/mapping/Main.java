@@ -97,7 +97,8 @@ public class Main {
             }
             for (AbstractConfiguration mappings : mappingsList) {
                 for (Mapping m : mappings.mappings) {
-                    if (m.getPropertyUri().contains("http://www.wikidata.org/prop/direct/")) {
+                    if (m.getPropertyUri().contains("http://www.wikidata.org/prop/direct/"))
+                    {
                         String construct = "CONSTRUCT {?s <http://wikiba.se/ontology#directClaim> <" + m.getPropertyUri() + "> . ?s ?p ?o} where { " +
                                 "?s <http://wikiba.se/ontology#directClaim> <" + m.getPropertyUri() + "> . " +
                                 "?s ?p ?o " +
@@ -115,9 +116,28 @@ public class Main {
                         qexec.close();
                         constructModel.close();
                     }
+                    if(m.getObject()!=null && m.getObject().contains("http://www.wikidata.org/entity/"))
+                    {
+                        System.out.println(m.getObject());
+                        String construct = "CONSTRUCT { <"+m.getObject()+"> ?p ?o} where { " +
+                                "<" + m.getObject() + "> ?p ?o " +
+                                "}";
+                        Query query = QueryFactory.create(construct);
+                        QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
+                        Model constructModel = qexec.execConstruct();
+
+                        StmtIterator a = constructModel.listStatements();
+                        while (a.hasNext())
+                        {
+                            Statement statement = a.next();
+                            writer.triple(statement.asTriple());
+                        }
+                        qexec.close();
+                        constructModel.close();
+                    }
                 }
             }
-//
+
             //extracts the information
             for (AbstractConfiguration mappings : mappingsList) {
                 if (mappings.getFormat().equals("json")) {
@@ -320,6 +340,7 @@ public class Main {
 }
 
     private static void processMap(HashMap<String, String> article, StreamRDF writer, AbstractConfiguration mappings) {
+        System.out.println(article);
         for (Mapping mapping : mappings.mappings)
         {
             ArrayList<Triple> triples = getObjects(mapping, mappings, article);
@@ -383,8 +404,6 @@ public class Main {
         for (String key : article.keySet())
         {
             Pattern p;
-            System.out.println(mapping.getType());
-            System.out.println(mapping.getTag());
             if (mappings.format.equals("csv")) {
                 p = Pattern.compile("^"+mapping.getTag()+"$");
                 //p = fast.get("^"+mapping.getTag()+"$");
@@ -480,6 +499,15 @@ public class Main {
                             break;
                         case DATE:
 //                            object = NodeFactory.createLiteral(article.get(key), XSDDatatype.XSDdateTime);
+                            break;
+                        case CLASS:
+                            if(mapping.getObject()!=null)
+                            {
+                                subject = getSubject(article, mappings, key);
+                                predicate = getPredicate(mapping);
+                                object = utility.createURI(mapping.getObject());
+                                triples.add(new Triple(subject, predicate, object));
+                            }
                             break;
                         case CUSTOM:
                             triples.addAll(mapping.getCustomMapping().function(article, key));
