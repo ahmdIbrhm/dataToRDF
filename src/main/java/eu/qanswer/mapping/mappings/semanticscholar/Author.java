@@ -12,13 +12,12 @@ public class Author extends AbstractConfiguration {
     {
         format = "json";
         file="sample-S2-records";
-        baseUrl = "http://semanticscholar.org/paper/";;
-        key = "publications.authors.id";
+        baseUrl = "http://www.semanticscholar.org/author/";
+        key = "publications.authors.ids[1]";
         iterator = "publications.authors";
         mappings = new ArrayList<Mapping>(Arrays.asList(
-                new Mapping("name","http://www.w3.org/2000/01/rdf-schema#label", Type.LITERAL),
-                new Mapping("name","http://www.wikidata.org/prop/direct/P2561", Type.LITERAL),
-                new Mapping("name","http://www.wikidata.org/prop/direct/P4012", Type.LITERAL)));
+                new Mapping("authors(.*)name","http://www.w3.org/2000/01/rdf-schema#label", Type.LITERAL),
+                new Mapping("authors(.*)name","http://www.wikidata.org/prop/direct/P2561", Type.LITERAL)));
 
     }
 }

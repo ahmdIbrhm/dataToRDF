@@ -19,10 +19,9 @@ public class Mapping {
         this.type=Type.CLASS;
     }
 
-    public Mapping(String tag, String propertyUri, String baseurl, CustomMapping customMapping, Type type){
+    public Mapping(String tag, String propertyUri, CustomMapping customMapping, Type type){
         this.tag = tag;
         this.propertyUri = propertyUri;
-        this.baseurl = baseurl;
         this.type = type;
         this.customMapping=customMapping;
         customMapping.setMapping(this);

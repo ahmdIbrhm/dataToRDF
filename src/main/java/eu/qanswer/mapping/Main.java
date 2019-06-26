@@ -22,19 +22,17 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.riot.system.StreamRDF;
 import org.apache.jena.riot.system.StreamRDFWriter;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Constructor;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -80,6 +78,15 @@ public class Main {
             System.out.println("Help Yourself");
         }
         else {
+//
+//            BufferedReader bufferedReader=new BufferedReader(new FileReader(new File("sample-S2-records")));
+//            BufferedWriter bufferedWriter=new BufferedWriter(new FileWriter("sample-S2-records"));
+//            String line1;
+//            while((line1=bufferedReader.readLine())!=null)
+//            {
+//                bufferedWriter.append(",");
+//            }
+
             StreamRDF writer = StreamRDFWriter.getWriterStream(new FileOutputStream(new File(outputFilePath)), RDFFormat.NTRIPLES);
             //uses links to extract important information from wikidata
             List<AbstractConfiguration> mappingsList = new ArrayList<>();
@@ -95,6 +102,26 @@ public class Main {
                     e.printStackTrace();
                 }
             }
+            StringBuilder result = new StringBuilder();
+            URL url = new URL(" http://purl.org/dc/terms/");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("accept", "text/turtle");
+            conn.setRequestMethod("GET");
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            File file=new File("turtle.ttl");
+            while ((line = rd.readLine()) != null) {
+
+                result.append(line);
+                result.append("\n");
+            }
+            rd.close();
+            Model model= ModelFactory.createDefaultModel();
+            model.read("turtle.ttl");
+            StmtIterator iterator= model.listStatements();
+            while(iterator.hasNext())
+                writer.triple(iterator.nextStatement().asTriple());
+
             for (AbstractConfiguration mappings : mappingsList) {
                 for (Mapping m : mappings.mappings) {
                     if (m.getPropertyUri().contains("http://www.wikidata.org/prop/direct/"))
@@ -118,7 +145,6 @@ public class Main {
                     }
                     if(m.getObject()!=null && m.getObject().contains("http://www.wikidata.org/entity/"))
                     {
-                        System.out.println(m.getObject());
                         String construct = "CONSTRUCT { <"+m.getObject()+"> ?p ?o} where { " +
                                 "<" + m.getObject() + "> ?p ?o " +
                                 "}";
@@ -295,7 +321,8 @@ public class Main {
                 case STRING:
                 case NUMBER:
                     s = reader.nextString();
-                    if (!name.equals(""))
+
+                    if (!name.equals("") && !s.trim().equals(""))
                         article.put(reader.getPath().replace("$.", ""), s);
 
                     break;
@@ -388,7 +415,6 @@ public class Main {
         String uri=mappings.baseUrl + article.get(splitByPoints(finalSubject));
         String [] array=uri.split(" ");
         String newUri=String.join("_",array);
-
         return (Utility.createURI(newUri));
     }
     private static Node getPredicate(Mapping mapping)

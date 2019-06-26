@@ -23,7 +23,7 @@ public class OrcId extends AbstractConfiguration {
         iterator = "profiles";
         mappings = new ArrayList<>(Arrays.asList(
                 new Mapping("orcid-identifier.uri","http://www.wikidata.org/prop/direct/P31","http://www.wikidata.org/entity/Q1650915"),
-                new Mapping("(.?)person.name.given-names","http://www.w3.org/2000/01/rdf-schema#label",baseUrl,new ClassForFnLn(),Type.CUSTOM),
+                new Mapping("(.?)person.name.given-names","http://www.w3.org/2000/01/rdf-schema#label",new ClassForFnLn(),Type.CUSTOM),
                 new Mapping("(.?)orcid-identifier.path","http://www.wikidata.org/prop/direct/P496", Type.URI),
                 new Mapping("(.?).work-summary(.*).put-code","http://www.wikidata.org/prop/direct/P50" ,baseUrl,Type.URI),
 //                new Mapping("(.?).education-summary(.*).put-code","http://www.wikidata.org/prop/direct/P2578" ,baseUrl,Type.URI),
