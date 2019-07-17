@@ -1,13 +1,13 @@
 package eu.qanswer.mapping.mappings.orcId;
 
-import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.AbstractConfigurationFile;
 import eu.qanswer.mapping.configuration.Mapping;
 import eu.qanswer.mapping.configuration.Type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class OrgStudy extends AbstractConfiguration {
+public class OrgStudy extends AbstractConfigurationFile {
     public OrgStudy()
     {
         format = "xml";

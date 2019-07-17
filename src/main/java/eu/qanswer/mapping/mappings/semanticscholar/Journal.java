@@ -1,13 +1,13 @@
 package eu.qanswer.mapping.mappings.semanticscholar;
 
-import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.AbstractConfigurationFile;
 import eu.qanswer.mapping.configuration.Mapping;
 import eu.qanswer.mapping.configuration.Type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Journal extends AbstractConfiguration {
+public class Journal extends AbstractConfigurationFile {
     public Journal() {
         format = "json";
         file = "sample-S2-records";

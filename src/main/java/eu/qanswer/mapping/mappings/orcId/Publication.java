@@ -1,7 +1,7 @@
 package eu.qanswer.mapping.mappings.orcId;
 
 import eu.qanswer.mapping.*;
-import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.AbstractConfigurationFile;
 import eu.qanswer.mapping.configuration.Mapping;
 import eu.qanswer.mapping.configuration.Type;
 import eu.qanswer.mapping.utility.Utility;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 import static org.apache.jena.datatypes.xsd.XSDDatatype.*;
 
-public class Publication extends AbstractConfiguration {
+public class Publication extends AbstractConfigurationFile {
     Publication publication=this;
     public Publication(){
         format = "xml";

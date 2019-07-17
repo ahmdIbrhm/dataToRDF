@@ -7,8 +7,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.opencsv.CSVReader;
 
-import eu.qanswer.mapping.configuration.AbstractConfiguration;
-import eu.qanswer.mapping.configuration.CSVConfiguration;
+import eu.qanswer.mapping.configuration.AbstractConfigurationFile;
+import eu.qanswer.mapping.configuration.CSVConfigurationFile;
 import eu.qanswer.mapping.configuration.Mapping;
 import eu.qanswer.mapping.utility.Utility;
 
@@ -89,14 +89,14 @@ public class Main {
 
             StreamRDF writer = StreamRDFWriter.getWriterStream(new FileOutputStream(new File(outputFilePath)), RDFFormat.NTRIPLES);
             //uses links to extract important information from wikidata
-            List<AbstractConfiguration> mappingsList = new ArrayList<>();
+            List<AbstractConfigurationFile> mappingsList = new ArrayList<>();
             String[] files = filesArguments.split(",");
             for (String filePath : files) {
                 Class<?> aClass;
                 try {
                     aClass = Class.forName(filePath.trim());
                     Constructor<?> ctor = aClass.getConstructor();
-                    AbstractConfiguration object = (AbstractConfiguration) ctor.newInstance();
+                    AbstractConfigurationFile object = (AbstractConfigurationFile) ctor.newInstance();
                     mappingsList.add(object);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -122,7 +122,7 @@ public class Main {
             while(iterator.hasNext())
                 writer.triple(iterator.nextStatement().asTriple());
 
-            for (AbstractConfiguration mappings : mappingsList) {
+            for (AbstractConfigurationFile mappings : mappingsList) {
                 for (Mapping m : mappings.mappings) {
                     if (m.getPropertyUri().contains("http://www.wikidata.org/prop/direct/"))
                     {
@@ -165,14 +165,14 @@ public class Main {
             }
 
             //extracts the information
-            for (AbstractConfiguration mappings : mappingsList) {
+            for (AbstractConfigurationFile mappings : mappingsList) {
                 if (mappings.getFormat().equals("json")) {
                     parseJson(mappings,writer);
                 } else if(mappings.getFormat().equals("xml")) {
                     parseXML(mappings,writer);
                 }
                 else if (mappings.getFormat().equals("csv")){
-                    parseCSV((CSVConfiguration) mappings,writer);
+                    parseCSV((CSVConfigurationFile) mappings,writer);
                 } else {
                     System.out.println("Error");
                 }
@@ -181,7 +181,7 @@ public class Main {
         }
     }
     private int nbOfTimes=0;
-    private void parseXML(AbstractConfiguration mappings, StreamRDF writer) {
+    private void parseXML(AbstractConfigurationFile mappings, StreamRDF writer) {
         String iterator = mappings.getIterator();
         HashMap<String, String> article = new HashMap<>();
         ArrayList<String> path=new ArrayList<>();
@@ -271,7 +271,7 @@ public class Main {
             e.printStackTrace();
         }
     }
-    private void parseJson(AbstractConfiguration mappings, StreamRDF writer) throws Exception{
+    private void parseJson(AbstractConfigurationFile mappings, StreamRDF writer) throws Exception{
         String iterator = mappings.getIterator();
         int counterNew = 0;
         int counterOld = -1;
@@ -338,7 +338,7 @@ public class Main {
             }
         }
     }
-    private void parseCSV(CSVConfiguration mappings, StreamRDF writer) throws Exception{
+    private void parseCSV(CSVConfigurationFile mappings, StreamRDF writer) throws Exception{
         CSVReader reader = new CSVReader(new FileReader(mappings.file),mappings.separator);
         String [] nextLine;
         System.out.println("Reading header of the CSV file ...");
@@ -366,7 +366,7 @@ public class Main {
 
 }
 
-    private static void processMap(HashMap<String, String> article, StreamRDF writer, AbstractConfiguration mappings) {
+    private static void processMap(HashMap<String, String> article, StreamRDF writer, AbstractConfigurationFile mappings) {
         System.out.println(article);
         for (Mapping mapping : mappings.mappings)
         {
@@ -388,7 +388,7 @@ public class Main {
         }
         return result;
     }
-    public static Node getSubject(HashMap<String,String> article, AbstractConfiguration mappings, String key)
+    public static Node getSubject(HashMap<String,String> article, AbstractConfigurationFile mappings, String key)
     {
         Utility utility=new Utility();
         String keyWithoutBrackets = key.replaceAll("\\[(.*?)]", "");
@@ -422,7 +422,7 @@ public class Main {
         Utility utility = new Utility();
         return utility.createURI(mapping.getPropertyUri());
     }
-    private static ArrayList<Triple> getObjects(Mapping mapping, AbstractConfiguration mappings, HashMap<String,String> article) {
+    private static ArrayList<Triple> getObjects(Mapping mapping, AbstractConfigurationFile mappings, HashMap<String,String> article) {
         ArrayList<Triple> triples = new ArrayList<>();
         HashMap<String, Pattern> fast=new HashMap<>();
         Node subject, predicate, object;

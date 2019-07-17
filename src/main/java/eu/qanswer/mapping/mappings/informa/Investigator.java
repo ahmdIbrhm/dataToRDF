@@ -1,19 +1,19 @@
 package eu.qanswer.mapping.mappings.informa;
 
-import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.AbstractConfigurationFile;
 import eu.qanswer.mapping.configuration.Mapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Investigator extends AbstractConfiguration {
+public class Investigator extends AbstractConfigurationFile {
 
     public Investigator(){
         file = "/Users/Dennis/PycharmProjects/TrialTrove/crawl_investigators";
         baseUrl = "https://citeline.eu.qanswer.mapping.mappings.informa.com/investigators/details/";
         key = "investigatorId";
         mappings = new ArrayList<Mapping>(Arrays.asList(
-//                new Mapping("investigatorId", "http://www.w3.org/2000/01/rdf-schema#type", "http://www.wikidata.org/entity/Q30093123"),
+                new Mapping("investigatorId", "http://www.w3.org/2000/01/rdf-schema#type", "http://www.wikidata.org/entity/Q30093123")
 //                new Mapping("investigatorEmails", "http://www.wikidata.org/prop/direct/P968", Type.LITERAL),
 //                new Mapping("investigatorPrimaryOrganization", "http://www.wikidata.org/prop/direct/P108", "https://citeline.eu.qanswer.mapping.informa.com/organizations/details/", Type.URI),
 //                new Mapping("investigatorLastName", "http://www.w3.org/2000/01/rdf-schema#label", Type.LITERAL),

@@ -1,6 +1,6 @@
 package eu.qanswer.mapping.configuration;
 
-public abstract class CSVConfiguration extends AbstractConfiguration {
+public abstract class CSVConfigurationFile extends AbstractConfigurationFile {
 
     public char separator;
 

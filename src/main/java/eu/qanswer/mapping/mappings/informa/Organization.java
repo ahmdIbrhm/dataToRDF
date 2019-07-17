@@ -1,12 +1,12 @@
 package eu.qanswer.mapping.mappings.informa;
 
-import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.AbstractConfigurationFile;
 import eu.qanswer.mapping.configuration.Mapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Organization extends AbstractConfiguration {
+public class Organization extends AbstractConfigurationFile {
 
     public Organization(){
         file = "/Users/Dennis/PycharmProjects/TrialTrove/crawl_organizations_old";

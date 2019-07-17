@@ -1,14 +1,13 @@
 package eu.qanswer.mapping.mappings.semanticscholar;
 
 import eu.qanswer.mapping.Main;
-import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.AbstractConfigurationFile;
 import eu.qanswer.mapping.configuration.Mapping;
 import eu.qanswer.mapping.configuration.Type;
 
 import eu.qanswer.mapping.mappings.orcId.CustomMapping;
-import eu.qanswer.mapping.mappings.orcId.Publication;
 import eu.qanswer.mapping.utility.Utility;
-import org.apache.commons.lang3.ObjectUtils;
+
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
@@ -16,10 +15,8 @@ import org.apache.jena.graph.Triple;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-public class Article extends AbstractConfiguration {
+public class Article extends AbstractConfigurationFile {
     Article art=this;
     public Article()
     {

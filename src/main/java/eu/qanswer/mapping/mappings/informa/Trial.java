@@ -1,6 +1,6 @@
 package eu.qanswer.mapping.mappings.informa;
 
-import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.AbstractConfigurationFile;
 import eu.qanswer.mapping.configuration.Mapping;
 import eu.qanswer.mapping.configuration.Type;
 import eu.qanswer.mapping.utility.Utility;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Trial extends AbstractConfiguration {
+public class Trial extends AbstractConfigurationFile {
     //the url used for all instances
     private Trial trial=this;
     public Trial(){

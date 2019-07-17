@@ -1,7 +1,7 @@
 package eu.qanswer.mapping.mappings.orcId;
 
 import eu.qanswer.mapping.Main;
-import eu.qanswer.mapping.configuration.AbstractConfiguration;
+import eu.qanswer.mapping.configuration.AbstractConfigurationFile;
 import eu.qanswer.mapping.configuration.Mapping;
 import eu.qanswer.mapping.configuration.Type;
 import eu.qanswer.mapping.utility.Utility;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class OrcId extends AbstractConfiguration {
+public class OrcId extends AbstractConfigurationFile {
     OrcId orcId=this;
     public OrcId(){
         format = "xml";

@@ -1,4 +1,4 @@
-package eu.qanswer.mapping;
+package eu.qanswer.mapping.mappings.informa;
 
 import eu.qanswer.mapping.utility.Parser;
 

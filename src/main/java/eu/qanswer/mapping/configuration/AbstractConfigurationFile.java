@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractConfiguration {
+public abstract class AbstractConfigurationFile {
 
     //the url used for all instances
     public String format;
