@@ -70,12 +70,13 @@ public class Main {
 
 
     public void run() throws Exception {
+        if (help) {
+            System.out.println("Help Yourself");
+            return;
+        }
         if (filesArguments == null){
             System.out.println("Specify the --filesArguments argument, or --help if you need more information");
             return;
-        }
-        if (help) {
-            System.out.println("Help Yourself");
         }
         else {
 //
